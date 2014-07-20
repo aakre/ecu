@@ -1,0 +1,107 @@
+/**
+ * \file
+ *
+ * \brief User board configuration template
+ *
+ */
+
+#ifndef CONF_BOARD_H
+#define CONF_BOARD_H
+
+
+#define USE_WDT
+
+/* Clock */
+//See con_clock. CPU runs at 48 Mhz
+#define		FOSC0					16000000 
+#define		BOARD_OSC0_HZ           16000000
+#define		BOARD_OSC0_STARTUP_US   2000
+#define		BOARD_OSC0_IS_XTAL      true
+#define		BOARD_OSC32_HZ          32768
+#define		BOARD_OSC32_STARTUP_US  71000
+#define		BOARD_OSC32_IS_XTAL     true
+
+/* GPIO etc */
+#define		LED1		83		//PIN 43
+#define 	LED2		82 		//PIN 42
+#define 	LED3		81		//PIN 41
+#define 	LED4		80		//PIN 40
+
+
+#define 	AIR_PLUS	4		//PIN 7
+
+
+#define 	END1		7 		//PIN 10
+#define 	END2		8 		//PIN 11
+#define 	INVERTER_DIN1		5 		//PIN 8 (CLEAR ERROR)
+#define 	INVERTER_DIN2		6 		//PIN 9
+#define 	RFE_PIN		16 		//PIN 13
+#define 	FRG_PIN		9 		//PIN 12
+
+
+#define		DAC0A		20		//PIN 19
+#define 	DAC0B		21 		//PIN 20
+
+#define 	XTAL00		62		//PIN 31
+#define 	XTAL01		63 		//PIN 32
+
+#define 	INT1		110		//PIN 56
+
+#define 	CS1			99		//PIN 50
+
+#define 	INVERTER_BTB	125		//PIN 60
+#define 	INVERTER_DOUT1		117		//PIN 57 (FRG)
+#define 	INVERTER_DOUT2		123		//PIN 58
+#define 	INVERTER_DOUT3		124		//PIN 59
+
+/* CAN */
+#define		CAN0_RX_PIN				AVR32_CANIF_RXLINE_0_1_PIN
+#define		CAN0_RX_FUNCTION		AVR32_CANIF_RXLINE_0_1_FUNCTION
+#define		CAN0_TX_PIN				AVR32_CANIF_TXLINE_0_1_PIN
+#define		CAN0_TX_FUNCTION		AVR32_CANIF_TXLINE_0_1_FUNCTION
+
+#define		CAN1_RX_PIN				AVR32_CANIF_RXLINE_1_1_PIN
+#define		CAN1_RX_FUNCTION		AVR32_CANIF_RXLINE_1_1_FUNCTION
+#define		CAN1_TX_PIN				AVR32_CANIF_TXLINE_1_1_PIN
+#define		CAN1_TX_FUNCTION		AVR32_CANIF_TXLINE_1_1_FUNCTION
+
+
+
+#define		CAN_WHEEL_DLC			0x4
+#define		CAN_ID_WHEEL_FL			CANR_FCN_DATA_ID | CANR_GRP_SENS_SPEED_ID | CANR_MODULE_ID0_ID
+#define		CAN_ID_WHEEL_FR			CANR_FCN_DATA_ID | CANR_GRP_SENS_SPEED_ID | CANR_MODULE_ID1_ID
+#define		CAN_ID_WHEEL_RL			CANR_FCN_DATA_ID | CANR_GRP_SENS_SPEED_ID | CANR_MODULE_ID2_ID
+#define		CAN_ID_WHEEL_RR			CANR_FCN_DATA_ID | CANR_GRP_SENS_SPEED_ID | CANR_MODULE_ID3_ID
+#define		BMS_PRECHARGE_ID		0x429//CANR_FCN_CMD_ID	 | 0x27		  | CANR_MODULE_ID2_ID
+#define		BMS_BATT_VOLT_ID		0x42A//CANR_FCN_CMD_ID	 | 0x27		  | CANR_MODULE_ID3_ID
+#define		BMS_BATT_TEMP_ID		0x42E//CANR_FCN_CMD_ID	 | 0x27		  | CANR_MODULE_ID7_ID
+
+
+#define		CANR_ID_IGNORE_MODULE	0x7F8 	
+
+#define		CAN_NO_DATA				0x0LL
+
+/* Torque */
+#define TORQUE_MAX					0x7FF8
+#define TORQUE_10pct				0xCCC
+
+/* SPI */
+#define SPI_ADRESS			&AVR32_SPI0
+#define SPI_SCK_PIN			AVR32_SPI0_SCK_0_0_PIN
+#define SPI_SCK_FUNCTION	AVR32_SPI0_SCK_0_0_FUNCTION
+#define SPI_MISO_PIN		AVR32_SPI0_MISO_0_0_PIN
+#define SPI_MISO_FUNCTION	AVR32_SPI0_MISO_0_0_FUNCTION
+#define SPI_MOSI_PIN		AVR32_SPI0_MOSI_0_0_PIN
+#define SPI_MOSI_FUNCTION	AVR32_SPI0_MOSI_0_0_FUNCTION
+#define SPI_CS_PIN			AVR32_SPI0_NPCS_0_0_PIN
+#define SPI_CS_FUNCTION		AVR32_SPI0_NPCS_0_0_FUNCTION
+
+/* Software data timers */
+#define TIMER_10_HZ		5
+#define TIMER_1_HZ		50
+#define TIMER_2_HZ		25
+
+
+
+
+#endif // CONF_BOARD_H
