@@ -60,7 +60,7 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 	ecu_data->WRR_sens = 0;
 	ecu_data->launch_control_flag = LAUNCH_CONTROL_INACTIVE;
 	ecu_data->reboot = 0;
-	ecu_data->config_max_trq = 50;
+	ecu_data->config_max_trq = 100;
 	ecu_data->Kp = Kp_default;
 	ecu_data->Ki = Ki_default;
 	ecu_data->Kd = Kd_default;

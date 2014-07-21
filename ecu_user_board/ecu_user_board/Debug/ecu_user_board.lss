@@ -4224,8 +4224,8 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 800035e8:	f9 48 00 60 	st.w	r12[96],r8
 	ecu_data->reboot = 0;
 800035ec:	f9 68 00 64 	st.b	r12[100],r8
-	ecu_data->config_max_trq = 50;
-800035f0:	33 2b       	mov	r11,50
+	ecu_data->config_max_trq = 100;
+800035f0:	36 4b       	mov	r11,100
 800035f2:	f9 6b 00 65 	st.b	r12[101],r11
 	ecu_data->Kp = Kp_default;
 800035f6:	fc 1b 42 c8 	movh	r11,0x42c8
