@@ -76,7 +76,7 @@ uint16_t calc_inverter_power(fsm_ecu_data_t *ecu_data) {
 
 int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
 	float speed = ecu_data->WRR_sens & 0xFF;
-	speed = speed*1.26;
+	speed = speed*2.574;
 	static bool allow_kers = false;
 	
 	if (speed > 10) {
@@ -357,16 +357,18 @@ void map_pedal(fsm_ecu_data_t *ecu_data) {
 	float config_max_trq = (float)ecu_data->config_max_trq / 100.0;
 	
 	int16_t trq_sens = (int16_t)min(ecu_data->trq_sens0, ecu_data->trq_sens1);
-	
-	// Handle values below 0
-	trq_sens = max(0, trq_sens);
-	// Handle values above 1000
-	trq_sens = min(trq_sens, 1000);
-	
-	float pedal = (float)MAX_TORQUE*(float)trq_sens*(float)trq_sens*config_max_trq/1000000.0;
-	//float pedal = (float)MAX_TORQUE*(float)trq_sens*config_max_trq/1000.0; //Linear curve
-	pedal_filter = (1-PEDAL_FILTER_GAIN)*pedal_filter + PEDAL_FILTER_GAIN*pedal;
-	ecu_data->trq_pedal = min(pedal_filter, pedal); //Selects filter when input increases, pedal when decreases
+	if (trq_sens > 20) {
+		// Handle values below 0
+		trq_sens = max(0, trq_sens);
+		// Handle values above 1000
+		trq_sens = min(trq_sens, 1000);
+		
+		float pedal = (float)MAX_TORQUE*(float)trq_sens*(float)trq_sens*config_max_trq/1000000.0;
+		//float pedal = (float)MAX_TORQUE*(float)trq_sens*config_max_trq/1000.0; //Linear curve
+		pedal_filter = (1-PEDAL_FILTER_GAIN)*pedal_filter + PEDAL_FILTER_GAIN*pedal;
+		
+		ecu_data->trq_pedal = min(pedal_filter, pedal); //Selects filter when input increases, pedal when decreases
+	}
 }
 
 
