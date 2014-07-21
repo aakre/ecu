@@ -360,15 +360,15 @@ fsm_ecu_state_t fsm_ecu_state_ready_func( fsm_ecu_data_t *ecu_data ) {
  		next_state = STATE_PLAUSIBILITY_ERROR;
 		 
   	} else {
-// 		kers = calc_kers(ecu_data);
+		kers = calc_kers(ecu_data);
 // 		if (kers < 0) {
 // 			ecu_data->trq_cmd = kers;
 // 		} else {
 //  			map_pedal(ecu_data);
 // 			ecu_data->trq_cmd = (int16_t)ecu_data->trq_pedal;
 //  		}
-		map_pedal(ecu_data);
-		ecu_data->trq_cmd = (int16_t)ecu_data->trq_pedal;
+		 map_pedal(ecu_data);
+		 ecu_data->trq_cmd = (int16_t)ecu_data->trq_pedal;
 	}
  	
  	ecu_can_inverter_torque_cmd(ecu_data->trq_cmd);

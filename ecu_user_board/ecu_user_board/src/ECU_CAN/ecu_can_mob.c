@@ -260,7 +260,7 @@ can_msg_t msg_rx_bms_battvolt  = {
 	{
 		{
 			.id			= 0x42A,
-			.id_mask	= 0x7FE, //Get battvolt and battcurr message
+			.id_mask	= 0x7F8, //Get battvolt and battcurr message +++++++
 		},
 	},
 	.data.u64 = 0x0LL,

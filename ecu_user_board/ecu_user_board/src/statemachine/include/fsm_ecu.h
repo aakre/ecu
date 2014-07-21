@@ -100,7 +100,7 @@ typedef struct fsm_ecu_data{
 	uint16_t brake_rear;
 	uint8_t flag_start_precharge;
 	uint8_t flag_brake_implausible;
-	uint8_t max_cell_temp;
+	int8_t max_cell_temp;
 	flag_drive_enable_t flag_drive_enable;
 	arctos_mode_t arctos_mode;
 	uint16_t inverter_error;
@@ -120,7 +120,7 @@ typedef struct fsm_ecu_data{
 	uint8_t inverter_timeout; //Not used (practically)
 	float lc_filter_gain;
 	float lc_trq_init;
-	uint16_t kers_factor;
+	int16_t kers_factor;
 	int16_t bms_current;
 }fsm_ecu_data_t;
 

@@ -18,6 +18,7 @@
 #define BRAKE_PLAUSIBILITY_TIME_LIMIT 25
 #define BRAKE_KERS_TRESHOLD			5000 // ???
 #define BRAKE_TRESHOLD				5000
+#define MAX_KERS					(int16_t)-3277
 
 
 bool brake_over_travel_check (fsm_ecu_data_t* ecu_data) {
@@ -74,12 +75,22 @@ uint16_t calc_inverter_power(fsm_ecu_data_t *ecu_data) {
 }
 
 int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
-	if ((ecu_data->trq_sens0 < 20) && (ecu_data->trq_sens1 < 20)) {
-		if (ecu_data->brake_front > BRAKE_KERS_TRESHOLD ) {
-			if (ecu_data->rpm > 42) {//42 rpm (motor) ~= 7km/h. To be sure, the limit is increased slightly. 
+	float speed = ecu_data->WRR_sens & 0xFF;
+	speed = speed*1.26;
+	static bool allow_kers = false;
+	
+	if (speed > 10) {
+		allow_kers = true;
+	}
+	
+	if (allow_kers) {
+		if ((ecu_data->trq_sens0 < 20) && (ecu_data->trq_sens1 < 20)) {
+			if (speed > 5.5) { //km/h
 				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 45)) {
-					return 0; //TODO Return a value from ecu_data that is received from dash
+					return (MAX_KERS*ecu_data->kers_factor)/100; //TODO Return a value from ecu_data that is received from dash
 				}
+			} else {
+				allow_kers = false;
 			}
 		}
 	}
@@ -247,7 +258,7 @@ void handle_dash_data(fsm_ecu_data_t *ecu_data) {
 		case (CANR_FCN_PRI_ID | CANR_GRP_DASH_ID | CANR_MODULE_ID1_ID):
 		start = ecu_data->dash_msg.data.u8[0];
 		//uint8_t tractive = ecu_data->dash_msg.data.u8[1];
-		ecu_data->kers_factor = ecu_data->dash_msg.data.u16[1];
+		ecu_data->kers_factor = ecu_data->dash_msg.data.s16[1];
 		ecu_data->slip_target = ecu_data->dash_msg.data.u16[2]/100.0;
 
 		if (start == 0) {
