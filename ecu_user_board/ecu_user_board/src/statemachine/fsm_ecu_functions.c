@@ -75,9 +75,8 @@ uint16_t calc_inverter_power(fsm_ecu_data_t *ecu_data) {
 }
 
 int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
-	float speed_fl = ecu_data->WFL_sens & 0xFF;
-	float speed_fr = ecu_data->WFR_sens & 0xFF;
-	float speed = (speed_fl + speed_fr)*2.574/2;
+	float speed = ecu_data->WRR_sens & 0xFF;
+	speed = speed*2.574;
 	static bool allow_kers = false;
 	
 	if (speed > 10) {
