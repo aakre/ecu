@@ -20,6 +20,8 @@
 #define BRAKE_TRESHOLD				5000
 #define MAX_KERS					(int16_t)-3277
 
+float slip_target[] = {0, 0.10, 0.15, 0.20, 0.25};
+
 
 bool brake_over_travel_check (fsm_ecu_data_t* ecu_data) {
 	return true;
@@ -27,7 +29,7 @@ bool brake_over_travel_check (fsm_ecu_data_t* ecu_data) {
 
 bool brake_plausibility_check(fsm_ecu_data_t *ecu_data) {
 	static uint8_t plausibility_timer = 0;
-	int16_t trq_sens = max(ecu_data->trq_sens0, ecu_data->trq_sens1); //Changed to max 10/6-14
+	int16_t trq_sens = max(ecu_data->trq_sens0, ecu_data->trq_sens1);
 	
 	if ((trq_sens > 250) && (ecu_data->brake_front > BRAKE_TRESHOLD)) {
 		plausibility_timer++;
@@ -36,14 +38,10 @@ bool brake_plausibility_check(fsm_ecu_data_t *ecu_data) {
 			return false;
 		}
 	} else {
-		plausibility_timer = 0; //Added 10/6-14
+		plausibility_timer = 0;
 	}
 	return true;
-	
-// 	if ((trq_sens > 250) && (ecu_data->brake_front > BRAKE_TRESHOLD)) {
-// 		return false;
-// 	}
-// 	return true;
+
 }
 
 bool torque_plausibility_check(fsm_ecu_data_t *ecu_data) {
@@ -247,6 +245,7 @@ void handle_dash_data(fsm_ecu_data_t *ecu_data) {
 	uint8_t start;
 	uint8_t lc_filter_time;
 	uint8_t state_of_lc = 0;
+	uint16_t slip_index = 0;
 	switch (ecu_data->dash_msg.id) {
 		case (CANR_FCN_PRI_ID | CANR_GRP_DASH_ID | CANR_MODULE_ID0_ID):
 		rtds_plays = ecu_data->dash_msg.data.u8[0];
@@ -259,7 +258,9 @@ void handle_dash_data(fsm_ecu_data_t *ecu_data) {
 		start = ecu_data->dash_msg.data.u8[0];
 		//uint8_t tractive = ecu_data->dash_msg.data.u8[1];
 		ecu_data->kers_factor = ecu_data->dash_msg.data.s16[1];
-		ecu_data->slip_target = ecu_data->dash_msg.data.u16[2]/100.0;
+		slip_index = ecu_data->dash_msg.data.u16[2];
+		slip_index = min(slip_index, 5);
+		ecu_data->slip_target = slip_target[slip_index-1];
 
 		if (start == 0) {
 			ecu_data->flag_drive_enable = DRIVE_DISABLE_REQUEST;

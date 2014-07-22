@@ -23,29 +23,35 @@ void traction_control(fsm_ecu_data_t* ecu_data) {
 	static float e_prev			= 0;
 	static float e_filter_prev	= 0;
 	static float e_filter_pprev	= 0;
+	float torque_limit			= 0;
 	
-	float Kp = ecu_data->Kp;
-	float Ki = ecu_data->Ki;
-	float Kd = ecu_data->Kd;
-	float slip_target = ecu_data->slip_target;
-	float d_filter_gain = ecu_data->d_filter_gain;
-	
-	//Calculate slip and error
-	e = 100*(slip_target - calculate_slip(ecu_data)); //Slip is a percentage value
-	if (e > 0) { //For TC only care if slip > slip_target
-		e = 0;	
+	if (ecu_data->slip_target > 0) {
+		float Kp = ecu_data->Kp;
+		float Ki = ecu_data->Ki;
+		float Kd = ecu_data->Kd;
+		float slip_target = ecu_data->slip_target;
+		float d_filter_gain = ecu_data->d_filter_gain;
+		
+		//Calculate slip and error
+		e = 100*(calculate_slip(ecu_data) - slip_target); //Slip is a percentage value
+		
+		//e_filter = (1-d_filter_gain)*e_filter_prev + d_filter_gain*e;
+		//float d_action = Kd/Ts*(e_filter - 2*e_filter_prev + e_filter_pprev);
+		
+		delta_u = Kp*(e-e_prev) + Ki*Ts*e; //PI
+		e_prev = e;
+		//e_filter_pprev = e_filter_prev;
+		//e_filter_prev  = e_filter;
+		ecu_data->control_u += delta_u;
+		ecu_data->control_u = max(50, min(100, ecu_data->control_u));
+		
+		torque_limit = 100 - ecu_data->control_u;
+		ecu_data->traction_control_limit = (int16_t)(MAX_TORQUE*torque_limit)/100;
+		asm("nop");
+	} else {
+		ecu_data->traction_control_limit = MAX_TORQUE;
 	}
-	//Derivative filter
-	e_filter = (1-d_filter_gain)*e_filter_prev + d_filter_gain*e;
 	
-	//Control law = u = trq_cmd_prev + delta_u (external reset)
-	delta_u = Kp*(e-e_prev) + Ki*Ts*e + Kd/Ts*(e_filter - 2*e_filter_prev + e_filter_pprev);
-	e_prev = e;
-	e_filter_pprev = e_filter_prev;
-	e_filter_prev  = e_filter;
-	
-	ecu_data->trq_pid = delta_u; //Subject to change depending on strategy
-	asm("nop");
 }
 
 void p_controller(fsm_ecu_data_t *ecu_data) {
@@ -59,7 +65,7 @@ void p_controller(fsm_ecu_data_t *ecu_data) {
 			e = 0;
 		}
 	}
-	ecu_data->trq_pid = Kp*e;
+	ecu_data->control_u = Kp*e;
 }
 
 void launch_control(fsm_ecu_data_t *ecu_data) {
@@ -84,18 +90,17 @@ void launch_control(fsm_ecu_data_t *ecu_data) {
 
 float calculate_slip(fsm_ecu_data_t *ecu_data) {
 	float slip;
-	uint8_t fl, fr, rl, rr;
-	fl = ecu_data->WFL_sens >> 8;
-	fr = ecu_data->WFR_sens >> 8;
-	rl = ecu_data->WRL_sens >> 8;
-	rr = ecu_data->WRR_sens >> 8;
+	float v_f = ecu_data->WFL_sens & 0xFF;
+	float v_r = ecu_data->WRR_sens & 0xFF; //WRL and WFR is not working
 	
-	uint16_t v_f = (fl + fr) / 2;
-	uint16_t v_r = (rl + rr) / 2; //Should be changed. Depends on turns etc.
+	//Actual speed is v*2.574 (average sensor),
+	//but the constant will be mathematically cancelled when
+	//calculating slip 
+	
 	if (v_r != 0) {
-		slip = (float)(v_r - v_f)/v_r;
+		slip = (v_r - v_f)/v_r;
 	} else {
-		slip = 0; //May be changed. For testing this is used to check the slip calculation
+		slip = ecu_data->slip_target; //Feed zero error to traction controller
 	}
 	return slip;
 }

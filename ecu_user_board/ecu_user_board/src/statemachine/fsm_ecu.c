@@ -37,7 +37,8 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 	ecu_data->trq_sens0_err = 0;
 	ecu_data->trq_sens1_err = 0;
 	ecu_data->trq_cmd = 0;
-	ecu_data->trq_pid = 0;
+	ecu_data->traction_control_limit = MAX_TORQUE;
+	ecu_data->control_u = 0;
 	ecu_data->dash_msg = (dash_can_msg_t){.data.u64 = 0x0LL, .id = 0};
 	ecu_data->bms_msg = (bms_can_msg_t){.data.u64 = 0x0LL, .id = 0};
 	ecu_data->vdc_battery = 0;
@@ -65,7 +66,7 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 	ecu_data->Ki = Ki_default;
 	ecu_data->Kd = Kd_default;
 	ecu_data->d_filter_gain = D_FILTER_GAIN_DEFAULT;
-	ecu_data->slip_target = SLIP_TARGET_DEFAULT;
+	ecu_data->slip_target = 0;
 	ecu_data->inverter_timeout = 0;
 	ecu_data->lc_filter_gain = LC_FILTER_GAIN_DEFAULT;
 	ecu_data->lc_trq_init = LC_TRQ_INIT_DEFAULT;
@@ -331,11 +332,6 @@ fsm_ecu_state_t fsm_ecu_state_ready_func( fsm_ecu_data_t *ecu_data ) {
 	}
 	
 	uint8_t bspd = check_bspd();
-	//uint16_t slip = (uint16_t)(calculate_slip(ecu_data)*100);
-	//uint16_t max_cur = calc_max_current_allowed(ecu_data);
-	uint16_t inverter_power = calc_inverter_power(ecu_data);
-	uint16_t bms_power = calc_bms_power(ecu_data);
-	ecu_can_send_slip_current(inverter_power, bms_power); //Reuse function
 	
 	/* First set trq_cmd to 0. Will be updated if the following tests are passed. 
 	 * If not, the motor will be disabled and zero torque requested (stored in inverter?). 
@@ -365,7 +361,10 @@ fsm_ecu_state_t fsm_ecu_state_ready_func( fsm_ecu_data_t *ecu_data ) {
 			ecu_data->trq_cmd = kers;
 		} else {
  			map_pedal(ecu_data);
-			ecu_data->trq_cmd = (int16_t)ecu_data->trq_pedal;
+			traction_control(ecu_data);
+			// DEBUG
+			ecu_can_send_slip_current((uint16_t)ecu_data->traction_control_limit, (uint16_t)ecu_data->control_u);
+			ecu_data->trq_cmd = max(0, min((int16_t)ecu_data->trq_pedal, ecu_data->traction_control_limit));
  		}
 	}
  	

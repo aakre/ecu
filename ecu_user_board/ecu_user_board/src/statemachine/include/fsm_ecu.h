@@ -27,9 +27,9 @@
 #define ERR_BRAKE_SENS_REAR		10 // Lost communication with rear brake sensor
 
 // PID parameters
-#define Kp_default				100.0F	// Proportional gain
-#define Ki_default				0.0F	// Integral gain (Ki = 1/Ti)
-#define Kd_default				30.0F	// Derivation gain
+#define Kp_default				2.0F	// Proportional gain
+#define Ki_default				1.0F	// Integral gain (Ki = 1/Ti)
+#define Kd_default				0.0F	// Derivation gain
 #define N_filter				100.0F	// -> Derivate filter time constant Tf = Kd / N, (Kd = Td)
 
 // Filter parameters
@@ -87,7 +87,8 @@ typedef struct fsm_ecu_data{
 	uint8_t trq_sens0_err;
 	uint8_t trq_sens1_err;
 	int16_t trq_cmd;
-	float trq_pid;
+	int16_t traction_control_limit;
+	float control_u;
 	float trq_pedal;
 	dash_can_msg_t dash_msg;
 	bms_can_msg_t bms_msg;

@@ -44,7 +44,7 @@
 #define INVERTER_DLC_3				3
 #define INVERTER_DLC_5				5
 
-#define MAX_TORQUE					(int16_t)0x7FF8
+#define MAX_TORQUE					(int16_t)0x7FFF
 #define MAX_RPM						5000											
 
 #endif /* INVERTER_DEFINES_H_ */
