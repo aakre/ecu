@@ -357,7 +357,7 @@ void map_pedal(fsm_ecu_data_t *ecu_data) {
 	float config_max_trq = (float)ecu_data->config_max_trq / 100.0;
 	
 	int16_t trq_sens = (int16_t)min(ecu_data->trq_sens0, ecu_data->trq_sens1);
-	if (trq_sens > 20) {
+	if (trq_sens > 20) { //Increase?
 		// Handle values below 0
 		trq_sens = max(0, trq_sens);
 		// Handle values above 1000
@@ -368,6 +368,8 @@ void map_pedal(fsm_ecu_data_t *ecu_data) {
 		pedal_filter = (1-PEDAL_FILTER_GAIN)*pedal_filter + PEDAL_FILTER_GAIN*pedal;
 		
 		ecu_data->trq_pedal = min(pedal_filter, pedal); //Selects filter when input increases, pedal when decreases
+	} else {
+		ecu_data->trq_pedal = 0;
 	}
 }
 
