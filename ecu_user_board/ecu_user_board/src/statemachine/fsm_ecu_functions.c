@@ -84,7 +84,7 @@ int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
 	if (allow_kers) {
 		if ((ecu_data->trq_sens0 < 100) && (ecu_data->trq_sens1 < 100)) {
 			if (speed > 5.5) { //km/h
-				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 40)) {
+				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 44)) {
 					return (MAX_KERS*ecu_data->kers_factor)/100; //TODO Return a value from ecu_data that is received from dash
 				}
 			} else {

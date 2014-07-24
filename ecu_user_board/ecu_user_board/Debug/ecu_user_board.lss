@@ -5736,10 +5736,10 @@ int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
 80003fb0:	e5 ac 00 c8 	cop	cp0,cr0,cr12,cr8,0x58
 80003fb4:	e0 8c 00 1f 	brvs	80003ff2 <calc_kers+0xae>
 80003fb8:	e0 8a 00 1d 	brle	80003ff2 <calc_kers+0xae>
-				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 40)) {
+				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 44)) {
 80003fbc:	ef 39 00 4c 	ld.ub	r9,r7[76]
 80003fc0:	20 19       	sub	r9,1
-80003fc2:	32 68       	mov	r8,38
+80003fc2:	32 a8       	mov	r8,42
 80003fc4:	f0 09 18 00 	cp.b	r9,r8
 80003fc8:	e0 8b 00 1a 	brhi	80003ffc <calc_kers+0xb8>
 					return (MAX_KERS*ecu_data->kers_factor)/100; //TODO Return a value from ecu_data that is received from dash
