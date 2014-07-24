@@ -72,6 +72,7 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 	ecu_data->lc_trq_init = LC_TRQ_INIT_DEFAULT;
 	ecu_data->kers_factor = 0;
 	ecu_data->bms_current = 0;
+	ecu_data->slip = 0;
 }
 
 fsm_ecu_state_func_t *const fsm_ecu_state_table[ FSM_ECU_NUM_STATES ] = {
@@ -96,6 +97,12 @@ fsm_ecu_state_t fsm_ecu_state_startup_func( fsm_ecu_data_t *ecu_data ) {
 	static uint8_t precharge_timer = 0;
 
 	get_new_data(ecu_data);
+	//get_speed_sens(ecu_data);
+	
+	//DEBUG
+	//ecu_data->slip = (int16_t)(100*calculate_slip(ecu_data));
+	//ecu_can_send_slip_current(ecu_data->slip, (uint16_t)ecu_data->control_u);
+	//DEBUG
 
 	if (ecu_data->flag_start_precharge == 1) {
 		switch (internal_state) {
@@ -362,8 +369,9 @@ fsm_ecu_state_t fsm_ecu_state_ready_func( fsm_ecu_data_t *ecu_data ) {
 		} else {
  			map_pedal(ecu_data);
 			traction_control(ecu_data);
+			ecu_data->slip = (int16_t)(100*calculate_slip(ecu_data));
 			// DEBUG
-			ecu_can_send_slip_current((uint16_t)ecu_data->traction_control_limit, (uint16_t)ecu_data->control_u);
+			ecu_can_send_slip_current(ecu_data->slip, (uint16_t)ecu_data->control_u);
 			ecu_data->trq_cmd = max(0, min((int16_t)ecu_data->trq_pedal, ecu_data->traction_control_limit));
  		}
 	}

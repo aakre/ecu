@@ -29,7 +29,7 @@ void ecu_can_send_drive_disabled(void);
 void ecu_can_confirm_activate_launch(void);
 void ecu_can_send_launch_ready(void);
 void ecu_can_send_launch_stop(void);
-void ecu_can_send_slip_current(uint16_t slip, uint16_t current);
+void ecu_can_send_slip_current(int16_t slip, uint16_t current);
 void ecu_can_inverter_read_torque_periodic(void);
 
 

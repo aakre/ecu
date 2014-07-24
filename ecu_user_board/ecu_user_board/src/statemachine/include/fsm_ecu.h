@@ -123,6 +123,7 @@ typedef struct fsm_ecu_data{
 	float lc_trq_init;
 	int16_t kers_factor;
 	int16_t bms_current;
+	int16_t slip;
 }fsm_ecu_data_t;
 
 void fsm_ecu_init(fsm_ecu_data_t *data);

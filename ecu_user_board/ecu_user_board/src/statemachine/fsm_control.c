@@ -43,10 +43,11 @@ void traction_control(fsm_ecu_data_t* ecu_data) {
 		//e_filter_pprev = e_filter_prev;
 		//e_filter_prev  = e_filter;
 		ecu_data->control_u += delta_u;
-		ecu_data->control_u = max(50, min(100, ecu_data->control_u));
+		ecu_data->control_u = max(0, min(50, ecu_data->control_u));
 		
 		torque_limit = 100 - ecu_data->control_u;
-		ecu_data->traction_control_limit = (int16_t)(MAX_TORQUE*torque_limit)/100;
+		torque_limit = MAX_TORQUE*torque_limit/100;
+		ecu_data->traction_control_limit = (int16_t)torque_limit;
 		asm("nop");
 	} else {
 		ecu_data->traction_control_limit = MAX_TORQUE;
@@ -90,8 +91,8 @@ void launch_control(fsm_ecu_data_t *ecu_data) {
 
 float calculate_slip(fsm_ecu_data_t *ecu_data) {
 	float slip;
-	float v_f = ecu_data->WFL_sens & 0xFF;
-	float v_r = ecu_data->WRR_sens & 0xFF; //WRL and WFR is not working
+	float v_f = (float)(ecu_data->WFL_sens & 0xFF);
+	float v_r = (float)(ecu_data->WRR_sens & 0xFF); //WRL and WFR is not working
 	
 	//Actual speed is v*2.574 (average sensor),
 	//but the constant will be mathematically cancelled when
