@@ -5723,9 +5723,9 @@ int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
 80003f8a:	30 08       	mov	r8,0
 80003f8c:	f0 09 18 00 	cp.b	r9,r8
 80003f90:	c3 60       	breq	80003ffc <calc_kers+0xb8>
-		if ((ecu_data->trq_sens0 < 50) && (ecu_data->trq_sens1 < 50)) {
+		if ((ecu_data->trq_sens0 < 100) && (ecu_data->trq_sens1 < 100)) {
 80003f92:	ef 09 00 10 	ld.sh	r9,r7[16]
-80003f96:	33 18       	mov	r8,49
+80003f96:	36 38       	mov	r8,99
 80003f98:	f0 09 19 00 	cp.h	r9,r8
 80003f9c:	e0 89 00 30 	brgt	80003ffc <calc_kers+0xb8>
 80003fa0:	ef 09 00 12 	ld.sh	r9,r7[18]
@@ -6196,55 +6196,54 @@ void map_pedal(fsm_ecu_data_t *ecu_data) {
 8000431e:	ef 09 00 12 	ld.sh	r9,r7[18]
 80004322:	f0 09 0d 48 	min	r8,r8,r9
 80004326:	5c 88       	casts.h	r8
-	if (trq_sens > 100) { 
-80004328:	36 49       	mov	r9,100
-8000432a:	f2 08 19 00 	cp.h	r8,r9
-8000432e:	e0 8a 00 34 	brle	80004396 <map_pedal+0x86>
+	if (trq_sens > 150) { 
+80004328:	e0 69 00 96 	mov	r9,150
+8000432c:	f2 08 19 00 	cp.h	r8,r9
+80004330:	e0 8a 00 34 	brle	80004398 <map_pedal+0x88>
 		// Handle values below 0
 		trq_sens = max(0, trq_sens);
-80004332:	30 09       	mov	r9,0
-80004334:	f2 08 0c 48 	max	r8,r9,r8
+80004334:	30 09       	mov	r9,0
+80004336:	f2 08 0c 48 	max	r8,r9,r8
 		// Handle values above 1000
 		trq_sens = min(trq_sens, 1000);
-80004338:	5c 88       	casts.h	r8
-8000433a:	e0 66 03 e8 	mov	r6,1000
-8000433e:	f0 06 0d 48 	min	r8,r8,r6
+8000433a:	5c 88       	casts.h	r8
+8000433c:	e0 66 03 e8 	mov	r6,1000
+80004340:	f0 06 0d 48 	min	r8,r8,r6
 		
 		float pedal = (float)MAX_TORQUE*(float)trq_sens*(float)trq_sens*config_max_trq/1000000.0;
-80004342:	5c 88       	casts.h	r8
-80004344:	e5 a6 08 08 	cop	cp0,cr8,cr0,cr8,0x4c
-80004348:	e0 66 f0 00 	mov	r6,61440
-8000434c:	ea 16 46 ff 	orh	r6,0x46ff
-80004350:	e5 a2 06 86 	cop	cp0,cr6,cr8,cr6,0x44
-80004354:	e5 a2 06 86 	cop	cp0,cr6,cr8,cr6,0x44
-80004358:	fc 1b 42 c8 	movh	r11,0x42c8
-8000435c:	e5 a4 0c 0c 	cop	cp0,cr12,cr0,cr12,0x48
-80004360:	f0 1f 00 10 	mcall	800043a0 <map_pedal+0x90>
-80004364:	e0 6b 24 00 	mov	r11,9216
-80004368:	ea 1b 49 74 	orh	r11,0x4974
-8000436c:	e5 a2 0c 6c 	cop	cp0,cr12,cr6,cr12,0x44
-80004370:	f0 1f 00 0c 	mcall	800043a0 <map_pedal+0x90>
+80004344:	5c 88       	casts.h	r8
+80004346:	e5 a6 08 08 	cop	cp0,cr8,cr0,cr8,0x4c
+8000434a:	e0 66 f0 00 	mov	r6,61440
+8000434e:	ea 16 46 ff 	orh	r6,0x46ff
+80004352:	e5 a2 06 86 	cop	cp0,cr6,cr8,cr6,0x44
+80004356:	e5 a2 06 86 	cop	cp0,cr6,cr8,cr6,0x44
+8000435a:	fc 1b 42 c8 	movh	r11,0x42c8
+8000435e:	e5 a4 0c 0c 	cop	cp0,cr12,cr0,cr12,0x48
+80004362:	f0 1f 00 10 	mcall	800043a0 <map_pedal+0x90>
+80004366:	e0 6b 24 00 	mov	r11,9216
+8000436a:	ea 1b 49 74 	orh	r11,0x4974
+8000436e:	e5 a2 0c 6c 	cop	cp0,cr12,cr6,cr12,0x44
+80004372:	f0 1f 00 0c 	mcall	800043a0 <map_pedal+0x90>
 		//float pedal = (float)MAX_TORQUE*(float)trq_sens*config_max_trq/1000.0; //Linear curve
 		pedal_filter = (1-PEDAL_FILTER_GAIN)*pedal_filter + PEDAL_FILTER_GAIN*pedal;
-80004374:	48 c9       	lddpc	r9,800043a4 <map_pedal+0x94>
-80004376:	72 0a       	ld.w	r10,r9[0x0]
-80004378:	30 08       	mov	r8,0
-8000437a:	e1 ac 08 a8 	cop	cp0,cr8,cr10,cr8,0x18
-8000437e:	93 08       	st.w	r9[0x0],r8
+80004376:	48 c9       	lddpc	r9,800043a4 <map_pedal+0x94>
+80004378:	72 0a       	ld.w	r10,r9[0x0]
+8000437a:	30 08       	mov	r8,0
+8000437c:	e1 ac 08 a8 	cop	cp0,cr8,cr10,cr8,0x18
+80004380:	93 08       	st.w	r9[0x0],r8
 		
 		ecu_data->trq_pedal = min(pedal_filter, pedal); //Selects filter when input increases, pedal when decreases
-80004380:	e5 ab 08 08 	cop	cp0,cr8,cr0,cr8,0x56
-80004384:	e5 ab 0c 0c 	cop	cp0,cr12,cr0,cr12,0x56
-80004388:	f0 0c 0d 48 	min	r8,r8,r12
-8000438c:	e5 a6 08 08 	cop	cp0,cr8,cr0,cr8,0x4c
-80004390:	8f 88       	st.w	r7[0x20],r8
-80004392:	e3 cd 80 c0 	ldm	sp++,r6-r7,pc
+80004382:	e5 ab 08 08 	cop	cp0,cr8,cr0,cr8,0x56
+80004386:	e5 ab 0c 0c 	cop	cp0,cr12,cr0,cr12,0x56
+8000438a:	f0 0c 0d 48 	min	r8,r8,r12
+8000438e:	e5 a6 08 08 	cop	cp0,cr8,cr0,cr8,0x4c
+80004392:	8f 88       	st.w	r7[0x20],r8
+80004394:	e3 cd 80 c0 	ldm	sp++,r6-r7,pc
 	} else {
 		ecu_data->trq_pedal = 0;
-80004396:	30 08       	mov	r8,0
-80004398:	8f 88       	st.w	r7[0x20],r8
-8000439a:	e3 cd 80 c0 	ldm	sp++,r6-r7,pc
-8000439e:	00 00       	add	r0,r0
+80004398:	30 08       	mov	r8,0
+8000439a:	8f 88       	st.w	r7[0x20],r8
+8000439c:	e3 cd 80 c0 	ldm	sp++,r6-r7,pc
 800043a0:	80 00       	ld.sh	r0,r0[0x0]
 800043a2:	77 14       	ld.w	r4,r11[0x44]
 800043a4:	00 00       	add	r0,r0

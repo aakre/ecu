@@ -82,7 +82,7 @@ int16_t calc_kers(fsm_ecu_data_t *ecu_data) {
 	}
 	
 	if (allow_kers) {
-		if ((ecu_data->trq_sens0 < 50) && (ecu_data->trq_sens1 < 50)) {
+		if ((ecu_data->trq_sens0 < 100) && (ecu_data->trq_sens1 < 100)) {
 			if (speed > 5.5) { //km/h
 				if ((ecu_data->max_cell_temp > 0) && (ecu_data->max_cell_temp < 40)) {
 					return (MAX_KERS*ecu_data->kers_factor)/100; //TODO Return a value from ecu_data that is received from dash
@@ -358,7 +358,7 @@ void map_pedal(fsm_ecu_data_t *ecu_data) {
 	float config_max_trq = (float)ecu_data->config_max_trq / 100.0;
 	
 	int16_t trq_sens = (int16_t)min(ecu_data->trq_sens0, ecu_data->trq_sens1);
-	if (trq_sens > 100) { 
+	if (trq_sens > 150) { 
 		// Handle values below 0
 		trq_sens = max(0, trq_sens);
 		// Handle values above 1000
