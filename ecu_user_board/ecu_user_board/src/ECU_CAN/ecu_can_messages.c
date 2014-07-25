@@ -264,10 +264,10 @@ void ecu_can_send_launch_stop(void) {
 	mob_tx_dash.can_msg);
 }
 
-void ecu_can_send_slip_current(int16_t slip, uint16_t current) {
+void ecu_can_send_slip_current(int16_t val1, int16_t val2) {
 	mob_slip_current.can_msg->data.u64		= 0x0LL;
-	mob_slip_current.can_msg->data.s16[0]	= slip;
-	mob_slip_current.can_msg->data.u16[1]	= current;
+	mob_slip_current.can_msg->data.s16[0]	= val1;
+	mob_slip_current.can_msg->data.s16[1]	= val2;
 	
 	mob_slip_current.can_msg->id = (CANR_FCN_DATA_ID | CANR_GRP_ECU_ID | CANR_MODULE_ID7_ID);
 	mob_slip_current.dlc = 4;
