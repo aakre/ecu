@@ -25,7 +25,7 @@ void traction_control(fsm_ecu_data_t* ecu_data) {
 	static float e_filter_pprev	= 0;
 	float torque_limit			= 0;
 	
-	if (ecu_data->slip_target > 0.1) {
+	if (ecu_data->slip_target > 0) {
 		float Kp = ecu_data->Kp;
 		float Ki = ecu_data->Ki;
 		float Kd = ecu_data->Kd;
@@ -98,7 +98,7 @@ float calculate_slip(fsm_ecu_data_t *ecu_data) {
 	//but the constant will be mathematically cancelled when
 	//calculating slip 
 	
-	if (v_r*2.574 > 5.5) {
+	if (v_r > 1) {
 		slip = (v_r - v_f)/v_r;
 	} else {
 		slip = ecu_data->slip_target; //Feed zero error to traction controller
