@@ -131,22 +131,26 @@ uint8_t get_brake_sens(fsm_ecu_data_t *ecu_data) {
 	return status;
 }
 
-uint8_t get_speed_sens(fsm_ecu_data_t *ecu_data) {
-	uint8_t status=0;
+void get_speed_sens(fsm_ecu_data_t *ecu_data) {
 	if (xQueueReceive( queue_wheel_fl, &ecu_data->WFL_sens, 0 ) == pdFALSE) {
-		status++;
+		ecu_data->speed_sens_alive[0] = 0;
+	} else {
+		ecu_data->speed_sens_alive[0] = 1;
 	}
 	if (xQueueReceive( queue_wheel_fr, &ecu_data->WFR_sens, 0 ) == pdFALSE) {
-		status++;
+		ecu_data->speed_sens_alive[1] = 0;
+	} else {
+		ecu_data->speed_sens_alive[1] = 1;
 	}
-	if (xQueueReceive( queue_wheel_rl, &ecu_data->WRL_sens, 0 ) == pdFALSE) {
-		status++;
-	}
+// 	if (xQueueReceive( queue_wheel_rl, &ecu_data->WRL_sens, 0 ) == pdFALSE) { // Sensor not working
+// 		status++;
+// 	}
 	if (xQueueReceive( queue_wheel_rr, &ecu_data->WRR_sens, 0 ) == pdFALSE) {
-		status++;
+		ecu_data->speed_sens_alive[2] = 0;
+	} else {
+		ecu_data->speed_sens_alive[2] = 1;
 	}
 	asm("nop");
-	return status;
 }
 
 uint8_t get_trq_sens(fsm_ecu_data_t *ecu_data) {

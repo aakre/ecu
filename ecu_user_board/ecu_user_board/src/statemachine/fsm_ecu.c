@@ -73,6 +73,9 @@ void fsm_ecu_init(fsm_ecu_data_t *ecu_data) {
 	ecu_data->kers_factor = 0;
 	ecu_data->bms_current = 0;
 	ecu_data->slip = 0;
+	ecu_data->speed_sens_alive[0] = 0;
+	ecu_data->speed_sens_alive[1] = 0;
+	ecu_data->speed_sens_alive[2] = 0;
 }
 
 fsm_ecu_state_func_t *const fsm_ecu_state_table[ FSM_ECU_NUM_STATES ] = {
@@ -188,7 +191,7 @@ fsm_ecu_state_t fsm_ecu_state_charged_func( fsm_ecu_data_t *ecu_data ) {
 
 	get_new_data(ecu_data);
 	no_trq_sens	  = get_trq_sens(ecu_data);
-	no_speed_sens = get_speed_sens(ecu_data);
+	get_speed_sens(ecu_data); //Previously returned a value
 	get_brake_sens(ecu_data);
 	no_speed_sens = 0;
 	
@@ -332,13 +335,13 @@ fsm_ecu_state_t fsm_ecu_state_ready_func( fsm_ecu_data_t *ecu_data ) {
 		return STATE_STARTUP;
 	}
 	
-	if (ecu_data->launch_control_flag == LAUNCH_CONTROL_INITIATE) {
-		if ((ecu_data->trq_sens0 < 20) && (ecu_data->trq_sens1 < 20) && (ecu_data->trq_cmd == 0)) {
-			asm("nop");
-			ecu_can_confirm_activate_launch();
-			return STATE_INIT_LAUNCH;
-		} 	
-	}
+// 	if (ecu_data->launch_control_flag == LAUNCH_CONTROL_INITIATE) {
+// 		if ((ecu_data->trq_sens0 < 20) && (ecu_data->trq_sens1 < 20) && (ecu_data->trq_cmd == 0)) {
+// 			asm("nop");
+// 			ecu_can_confirm_activate_launch();
+// 			return STATE_INIT_LAUNCH;
+// 		} 	
+// 	}
 	
 	uint8_t bspd = check_bspd();
 	

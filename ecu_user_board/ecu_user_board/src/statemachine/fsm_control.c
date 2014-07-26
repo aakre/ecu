@@ -90,9 +90,29 @@ void launch_control(fsm_ecu_data_t *ecu_data) {
 }
 
 float calculate_slip(fsm_ecu_data_t *ecu_data) {
-	float slip;
-	float v_f = (float)(ecu_data->WFR_sens & 0xFF);
-	float v_r = (float)(ecu_data->WRR_sens & 0xFF); //WRL and WFR is not working
+	float slip, v_r, v_f;
+	
+	if (ecu_data->speed_sens_alive[2] == 0) {
+		//No measurement from rear wheel
+		return ecu_data->slip_target;
+	} else {
+		v_r = (float)(ecu_data->WRR_sens & 0xFF);
+	}
+	
+	//Select measurement - new 26/7
+	if ((ecu_data->speed_sens_alive[0] == 1) && (ecu_data->speed_sens_alive[1] == 1)) {
+		float v1 = (float)(ecu_data->WFL_sens & 0xFF);
+		float v2 = (float)(ecu_data->WFR_sens & 0xFF);
+		v_f = (v1+v2)/2;
+	} else if ((ecu_data->speed_sens_alive[0] == 1) && (ecu_data->speed_sens_alive[1] == 0)){
+		v_f = (float)(ecu_data->WFL_sens & 0xFF);
+	} else if ((ecu_data->speed_sens_alive[0] == 0) && (ecu_data->speed_sens_alive[1] == 1)) {
+		v_f = (float)(ecu_data->WFR_sens & 0xFF);
+	} else {
+		//No measurement
+		return ecu_data->slip_target;
+	}
+
 	
 	//Actual speed is v*2.574 (average sensor),
 	//but the constant will be mathematically cancelled when

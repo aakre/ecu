@@ -124,6 +124,7 @@ typedef struct fsm_ecu_data{
 	int16_t kers_factor;
 	int16_t bms_current;
 	int16_t slip;
+	uint8_t speed_sens_alive[3];
 }fsm_ecu_data_t;
 
 void fsm_ecu_init(fsm_ecu_data_t *data);
