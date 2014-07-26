@@ -20,7 +20,7 @@ uint8_t check_bspd(void);
 uint8_t check_inverter_error(fsm_ecu_data_t *ecu_data);
 uint8_t check_inverter_timeout(fsm_ecu_data_t *ecu_data);
 uint8_t get_brake_sens(fsm_ecu_data_t *ecu_data);
-void get_speed_sens(fsm_ecu_data_t *ecu_data);
+uint8_t get_speed_sens(fsm_ecu_data_t *ecu_data);
 uint8_t get_trq_sens(fsm_ecu_data_t *ecu_data);
 uint16_t convert_num_to_vdc(uint32_t num);
 uint16_t convert_to_big_endian(uint32_t data);
