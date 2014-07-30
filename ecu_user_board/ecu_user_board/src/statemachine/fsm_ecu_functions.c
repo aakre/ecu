@@ -151,11 +151,29 @@ uint8_t get_speed_sens(fsm_ecu_data_t *ecu_data) {
 
 uint8_t get_trq_sens(fsm_ecu_data_t *ecu_data) {
 	uint8_t status = 0;
+	static uint8_t trq_sens0_missed = 0;
+	static uint8_t trq_sens1_missed = 0;
 	if (xQueueReceive( queue_trq_sens0, &ecu_data->trq_sens0, 0 ) == pdFALSE ) {
 		status++;
+		trq_sens0_missed++;
+		if (trq_sens0_missed == 10) {
+			ecu_data->trq_sens0 = 0;
+			ecu_data->trq_sens0_err = 0xFF;
+			trq_sens0_missed = 0;	
+		}
+	} else {
+		trq_sens0_missed = 0;
 	}
 	if (xQueueReceive( queue_trq_sens1, &ecu_data->trq_sens1, 0 ) == pdFALSE ) {
 		status++;
+		trq_sens1_missed++;
+		if (trq_sens1_missed == 10) {
+			ecu_data->trq_sens1 = 0;
+			ecu_data->trq_sens1_err = 0xFF;
+			trq_sens1_missed = 0;
+		}
+	} else {
+		trq_sens1_missed = 0;
 	}
 	if (xQueueReceive( queue_trq_sens0_err, &ecu_data->trq_sens0_err, 0 ) == pdFALSE ) {
 		status++;
